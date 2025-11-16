@@ -189,7 +189,7 @@ int main()
 
 	// Map the device to memory
 	fbmap = (char *)mmap(0, screensize, PROT_READ | PROT_WRITE, MAP_SHARED, fbfd, 0);
-	if ((int)fbmap == -1)
+	if (fbmap == MAP_FAILED)
 	{
 		perror("ERROR: failed to map framebuffer device file to memory");
 		exit(4);
