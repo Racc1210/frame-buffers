@@ -5,7 +5,7 @@
 #include <string.h>
 #include <sys/mman.h>
 #include <sys/ioctl.h>
-#include <termio.h>
+#include <termios.h>
 #include <unistd.h>
 
 // Constants
