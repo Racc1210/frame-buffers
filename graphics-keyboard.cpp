@@ -5,7 +5,7 @@
 #include <string.h>
 #include <sys/mman.h>
 #include <sys/ioctl.h>
-#include <termio.h>
+#include <termios.h>
 #include <unistd.h>
 
 // Constants
@@ -55,15 +55,9 @@ void sqrPrnt(int x, int y, int w, int h, int base)
 
 void clearscreen()
 {
-	system("clear");
-	if (!cur_term)
-	{
-		int result;
-		setupterm(nullptr, STDOUT_FILENO, &result);
-		if (result <= 0)
-			return;
-	}
-	putp(tigetstr("clear"));
+	// Usar secuencias ANSI para limpiar pantalla (más portable)
+	printf("\033[2J\033[H");
+	fflush(stdout);
 }
 
 void handlecommand(char *command)
@@ -130,38 +124,43 @@ void handlekeys()
 	memset(buffer, 0, SIZE + 1);
 	clearscreen();
 	printf("Type a command: ");
+	fflush(stdout);
 	do
 	{
 		input = getch();
-		if (input == 10)
+		if (input == 10) // Enter
 		{
 			printf("\r");
-			for (int i = 0; i < p + 16; i++)
+			for (int i = 0; i < SIZE + 16; i++)
 				printf(" ");
+			printf("\r");
 			handlecommand(buffer);
-			memset(buffer, 32, p);
-			printf("\rType a command: %s", buffer);
-			memset(buffer, 0, p + 1);
+			memset(buffer, 0, SIZE + 1);
 			p = 0;
+			printf("Type a command: ");
+			fflush(stdout);
 		}
-		else if ((input == 127 || input == 8) && p > 0)
-		{ // Backspace
+		else if ((input == 127 || input == 8) && p > 0) // Backspace
+		{
 			p--;
 			buffer[p] = 0;
-			// Limpia la línea antes de imprimir el buffer
-			printf("\rType a command: ");
-			for (int i = 0; i < SIZE; i++)
+			// Limpiar la línea completamente antes de reimprimir
+			printf("\r");
+			for (int i = 0; i < SIZE + 16; i++)
 				printf(" ");
 			printf("\rType a command: %s", buffer);
+			fflush(stdout);
 		}
-		else if (input >= 32 && input < 127 && p < SIZE)
-		{ // Caracteres imprimibles
+		else if (input >= 32 && input < 127 && p < SIZE) // Caracteres imprimibles
+		{
 			buffer[p++] = input;
 			buffer[p] = 0;
-			printf("\rType a command: ");
-			for (int i = 0; i < SIZE; i++)
+			// Limpiar la línea completamente antes de reimprimir
+			printf("\r");
+			for (int i = 0; i < SIZE + 16; i++)
 				printf(" ");
 			printf("\rType a command: %s", buffer);
+			fflush(stdout);
 		}
 	} while (!(input == 'x' && p == 1));
 }
