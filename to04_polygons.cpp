@@ -57,109 +57,155 @@ void dibujar_cuadrado(int posicion_x, int posicion_y, int color)
     }
 }
 
-// Dibuja un pentagono usando puntos calculados
+// Dibuja un pentagono (5 lados)
 void dibujar_pentagono(int posicion_x, int posicion_y, int color)
 {
-    int centro_x = posicion_x + TAMANO_FIGURA / 2;
-    int centro_y = posicion_y + TAMANO_FIGURA / 2;
-    int radio = TAMANO_FIGURA / 2;
-
-    // Dibujar el pentagono rellenando con puntos
-    for (int fila = 0; fila < TAMANO_FIGURA; fila++)
-    {
-        for (int columna = 0; columna < TAMANO_FIGURA; columna++)
-        {
-            int pixel_x = posicion_x + columna;
-            int pixel_y = posicion_y + fila;
-
-            // Calcular distancia desde el centro
-            int distancia_x = pixel_x - centro_x;
-            int distancia_y = pixel_y - centro_y;
-            double distancia = sqrt(distancia_x * distancia_x + distancia_y * distancia_y);
-
-            // Si esta dentro del radio, dibujarlo
-            if (distancia <= radio)
-            {
-                if (pixel_x >= informacion_variable->xres || pixel_y >= informacion_variable->yres)
-                    continue;
-
-                long int ubicacion = (pixel_y + informacion_variable->yoffset) * informacion_fija->line_length +
-                                     (pixel_x + informacion_variable->xoffset) * (informacion_variable->bits_per_pixel / 8);
-
-                if (ubicacion < tamano_pantalla)
-                    *((unsigned short int *)(mapa_framebuffer + ubicacion)) = color;
-            }
-        }
-    }
+	int centro_x = posicion_x + TAMANO_FIGURA / 2;
+	int centro_y = posicion_y + TAMANO_FIGURA / 2;
+	int radio = TAMANO_FIGURA / 2;
+	int numero_lados = 5;
+	
+	// Calcular vertices del pentagono
+	int vertices_x[5];
+	int vertices_y[5];
+	
+	for (int indice = 0; indice < numero_lados; indice++)
+	{
+		double angulo = (2.0 * PI * indice / numero_lados) - (PI / 2.0);
+		vertices_x[indice] = centro_x + (int)(radio * cos(angulo));
+		vertices_y[indice] = centro_y + (int)(radio * sin(angulo));
+	}
+	
+	// Dibujar lineas entre vertices consecutivos
+	for (int indice = 0; indice < numero_lados; indice++)
+	{
+		int siguiente = (indice + 1) % numero_lados;
+		int inicio_x = vertices_x[indice];
+		int inicio_y = vertices_y[indice];
+		int fin_x = vertices_x[siguiente];
+		int fin_y = vertices_y[siguiente];
+		
+		// Dibujar linea simple punto por punto
+		int pasos = abs(fin_x - inicio_x) > abs(fin_y - inicio_y) ? abs(fin_x - inicio_x) : abs(fin_y - inicio_y);
+		if (pasos == 0) pasos = 1;
+		
+		for (int paso = 0; paso <= pasos; paso++)
+		{
+			int pixel_x = inicio_x + (fin_x - inicio_x) * paso / pasos;
+			int pixel_y = inicio_y + (fin_y - inicio_y) * paso / pasos;
+			
+			if (pixel_x >= 0 && pixel_x < informacion_variable->xres && 
+			    pixel_y >= 0 && pixel_y < informacion_variable->yres)
+			{
+				long int ubicacion = (pixel_y + informacion_variable->yoffset) * informacion_fija->line_length +
+									 (pixel_x + informacion_variable->xoffset) * (informacion_variable->bits_per_pixel / 8);
+				
+				if (ubicacion < tamano_pantalla)
+					*((unsigned short int *)(mapa_framebuffer + ubicacion)) = color;
+			}
+		}
+	}
 }
 
-// Dibuja un heptagono (simplificado como circulo)
+// Dibuja un heptagono (7 lados)
 void dibujar_heptagono(int posicion_x, int posicion_y, int color)
 {
-    int centro_x = posicion_x + TAMANO_FIGURA / 2;
-    int centro_y = posicion_y + TAMANO_FIGURA / 2;
-    int radio = TAMANO_FIGURA / 2;
-
-    for (int fila = 0; fila < TAMANO_FIGURA; fila++)
-    {
-        for (int columna = 0; columna < TAMANO_FIGURA; columna++)
-        {
-            int pixel_x = posicion_x + columna;
-            int pixel_y = posicion_y + fila;
-
-            int distancia_x = pixel_x - centro_x;
-            int distancia_y = pixel_y - centro_y;
-            double distancia = sqrt(distancia_x * distancia_x + distancia_y * distancia_y);
-
-            if (distancia <= radio)
-            {
-                if (pixel_x >= informacion_variable->xres || pixel_y >= informacion_variable->yres)
-                    continue;
-
-                long int ubicacion = (pixel_y + informacion_variable->yoffset) * informacion_fija->line_length +
-                                     (pixel_x + informacion_variable->xoffset) * (informacion_variable->bits_per_pixel / 8);
-
-                if (ubicacion < tamano_pantalla)
-                    *((unsigned short int *)(mapa_framebuffer + ubicacion)) = color;
-            }
-        }
-    }
+	int centro_x = posicion_x + TAMANO_FIGURA / 2;
+	int centro_y = posicion_y + TAMANO_FIGURA / 2;
+	int radio = TAMANO_FIGURA / 2;
+	int numero_lados = 7;
+	
+	// Calcular vertices del heptagono
+	int vertices_x[7];
+	int vertices_y[7];
+	
+	for (int indice = 0; indice < numero_lados; indice++)
+	{
+		double angulo = (2.0 * PI * indice / numero_lados) - (PI / 2.0);
+		vertices_x[indice] = centro_x + (int)(radio * cos(angulo));
+		vertices_y[indice] = centro_y + (int)(radio * sin(angulo));
+	}
+	
+	// Dibujar lineas entre vertices consecutivos
+	for (int indice = 0; indice < numero_lados; indice++)
+	{
+		int siguiente = (indice + 1) % numero_lados;
+		int inicio_x = vertices_x[indice];
+		int inicio_y = vertices_y[indice];
+		int fin_x = vertices_x[siguiente];
+		int fin_y = vertices_y[siguiente];
+		
+		// Dibujar linea simple punto por punto
+		int pasos = abs(fin_x - inicio_x) > abs(fin_y - inicio_y) ? abs(fin_x - inicio_x) : abs(fin_y - inicio_y);
+		if (pasos == 0) pasos = 1;
+		
+		for (int paso = 0; paso <= pasos; paso++)
+		{
+			int pixel_x = inicio_x + (fin_x - inicio_x) * paso / pasos;
+			int pixel_y = inicio_y + (fin_y - inicio_y) * paso / pasos;
+			
+			if (pixel_x >= 0 && pixel_x < informacion_variable->xres && 
+			    pixel_y >= 0 && pixel_y < informacion_variable->yres)
+			{
+				long int ubicacion = (pixel_y + informacion_variable->yoffset) * informacion_fija->line_length +
+									 (pixel_x + informacion_variable->xoffset) * (informacion_variable->bits_per_pixel / 8);
+				
+				if (ubicacion < tamano_pantalla)
+					*((unsigned short int *)(mapa_framebuffer + ubicacion)) = color;
+			}
+		}
+	}
 }
 
-// Dibuja un decagono (simplificado como circulo)
+// Dibuja un decagono (10 lados)
 void dibujar_decagono(int posicion_x, int posicion_y, int color)
 {
-    int centro_x = posicion_x + TAMANO_FIGURA / 2;
-    int centro_y = posicion_y + TAMANO_FIGURA / 2;
-    int radio = TAMANO_FIGURA / 2;
-
-    for (int fila = 0; fila < TAMANO_FIGURA; fila++)
-    {
-        for (int columna = 0; columna < TAMANO_FIGURA; columna++)
-        {
-            int pixel_x = posicion_x + columna;
-            int pixel_y = posicion_y + fila;
-
-            int distancia_x = pixel_x - centro_x;
-            int distancia_y = pixel_y - centro_y;
-            double distancia = sqrt(distancia_x * distancia_x + distancia_y * distancia_y);
-
-            if (distancia <= radio)
-            {
-                if (pixel_x >= informacion_variable->xres || pixel_y >= informacion_variable->yres)
-                    continue;
-
-                long int ubicacion = (pixel_y + informacion_variable->yoffset) * informacion_fija->line_length +
-                                     (pixel_x + informacion_variable->xoffset) * (informacion_variable->bits_per_pixel / 8);
-
-                if (ubicacion < tamano_pantalla)
-                    *((unsigned short int *)(mapa_framebuffer + ubicacion)) = color;
-            }
-        }
-    }
-}
-
-// Limpia la pantalla usando secuencias ANSI
+	int centro_x = posicion_x + TAMANO_FIGURA / 2;
+	int centro_y = posicion_y + TAMANO_FIGURA / 2;
+	int radio = TAMANO_FIGURA / 2;
+	int numero_lados = 10;
+	
+	// Calcular vertices del decagono
+	int vertices_x[10];
+	int vertices_y[10];
+	
+	for (int indice = 0; indice < numero_lados; indice++)
+	{
+		double angulo = (2.0 * PI * indice / numero_lados) - (PI / 2.0);
+		vertices_x[indice] = centro_x + (int)(radio * cos(angulo));
+		vertices_y[indice] = centro_y + (int)(radio * sin(angulo));
+	}
+	
+	// Dibujar lineas entre vertices consecutivos
+	for (int indice = 0; indice < numero_lados; indice++)
+	{
+		int siguiente = (indice + 1) % numero_lados;
+		int inicio_x = vertices_x[indice];
+		int inicio_y = vertices_y[indice];
+		int fin_x = vertices_x[siguiente];
+		int fin_y = vertices_y[siguiente];
+		
+		// Dibujar linea simple punto por punto
+		int pasos = abs(fin_x - inicio_x) > abs(fin_y - inicio_y) ? abs(fin_x - inicio_x) : abs(fin_y - inicio_y);
+		if (pasos == 0) pasos = 1;
+		
+		for (int paso = 0; paso <= pasos; paso++)
+		{
+			int pixel_x = inicio_x + (fin_x - inicio_x) * paso / pasos;
+			int pixel_y = inicio_y + (fin_y - inicio_y) * paso / pasos;
+			
+			if (pixel_x >= 0 && pixel_x < informacion_variable->xres && 
+			    pixel_y >= 0 && pixel_y < informacion_variable->yres)
+			{
+				long int ubicacion = (pixel_y + informacion_variable->yoffset) * informacion_fija->line_length +
+									 (pixel_x + informacion_variable->xoffset) * (informacion_variable->bits_per_pixel / 8);
+				
+				if (ubicacion < tamano_pantalla)
+					*((unsigned short int *)(mapa_framebuffer + ubicacion)) = color;
+			}
+		}
+	}
+}// Limpia la pantalla usando secuencias ANSI
 void limpiar_pantalla()
 {
     printf("\033[2J\033[H");
