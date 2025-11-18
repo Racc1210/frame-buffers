@@ -138,6 +138,8 @@ int getnumber()
 	// finish line visually
 	printf("\n");
 	int n = 0;
+	// Clear the screen after confirming the number
+	clearscreen();
 	if (p > 0)
 		n = atoi(numbuf);
 	return n;
@@ -166,7 +168,6 @@ void handlekeys()
 			p = 0;
 			printf("Type a command: ");
 			fflush(stdout);
-			clearscreen();
 		}
 		else if ((input == 127 || input == 8) && p > 0) // Backspace
 		{
