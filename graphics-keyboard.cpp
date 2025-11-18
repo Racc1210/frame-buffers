@@ -159,10 +159,8 @@ void handlekeys()
 		input = getch();
 		if (input == 10) // Enter
 		{
-			printf("\r");
-			for (int i = 0; i < SIZE + 16; i++)
-				printf(" ");
-			printf("\r");
+			// Clear current line to avoid wrapping-induced newlines
+			printf("\r\033[K");
 			handlecommand(buffer);
 			memset(buffer, 0, SIZE + 1);
 			p = 0;
@@ -173,22 +171,16 @@ void handlekeys()
 		{
 			p--;
 			buffer[p] = 0;
-			// Limpiar la línea completamente antes de reimprimir
-			printf("\r");
-			for (int i = 0; i < SIZE + 16; i++)
-				printf(" ");
-			printf("\rType a command: %s", buffer);
+			// Clear line and reprint prompt + buffer (avoid long-space wrapping)
+			printf("\r\033[KType a command: %s", buffer);
 			fflush(stdout);
 		}
 		else if (input >= 32 && input < 127 && p < SIZE) // Caracteres imprimibles
 		{
 			buffer[p++] = input;
 			buffer[p] = 0;
-			// Limpiar la línea completamente antes de reimprimir
-			printf("\r");
-			for (int i = 0; i < SIZE + 16; i++)
-				printf(" ");
-			printf("\rType a command: %s", buffer);
+			// Clear line and reprint prompt + buffer
+			printf("\r\033[KType a command: %s", buffer);
 			fflush(stdout);
 		}
 	} while (!(input == 'x' && p == 1));
