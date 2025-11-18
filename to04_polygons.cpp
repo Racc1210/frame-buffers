@@ -76,27 +76,37 @@ void dibujar_pentagono(int posicion_x, int posicion_y, int color)
 		vertices_y[indice] = centro_y + (int)(radio * sin(angulo));
 	}
 	
-	// Dibujar lineas entre vertices consecutivos
-	for (int indice = 0; indice < numero_lados; indice++)
+	// Rellenar el pentagono pixel por pixel (similar a cuadrado)
+	for (int fila = 0; fila < TAMANO_FIGURA; fila++)
 	{
-		int siguiente = (indice + 1) % numero_lados;
-		int inicio_x = vertices_x[indice];
-		int inicio_y = vertices_y[indice];
-		int fin_x = vertices_x[siguiente];
-		int fin_y = vertices_y[siguiente];
-		
-		// Dibujar linea simple punto por punto
-		int pasos = abs(fin_x - inicio_x) > abs(fin_y - inicio_y) ? abs(fin_x - inicio_x) : abs(fin_y - inicio_y);
-		if (pasos == 0) pasos = 1;
-		
-		for (int paso = 0; paso <= pasos; paso++)
+		for (int columna = 0; columna < TAMANO_FIGURA; columna++)
 		{
-			int pixel_x = inicio_x + (fin_x - inicio_x) * paso / pasos;
-			int pixel_y = inicio_y + (fin_y - inicio_y) * paso / pasos;
+			int pixel_x = posicion_x + columna;
+			int pixel_y = posicion_y + fila;
 			
-			if (pixel_x >= 0 && pixel_x < informacion_variable->xres && 
-			    pixel_y >= 0 && pixel_y < informacion_variable->yres)
+			// Verificar si el punto esta dentro del pentagono
+			int dentro = 1;
+			for (int indice = 0; indice < numero_lados; indice++)
 			{
+				int siguiente = (indice + 1) % numero_lados;
+				int vector_x = vertices_x[siguiente] - vertices_x[indice];
+				int vector_y = vertices_y[siguiente] - vertices_y[indice];
+				int punto_x = pixel_x - vertices_x[indice];
+				int punto_y = pixel_y - vertices_y[indice];
+				
+				// Producto cruz para verificar de que lado esta el punto
+				if (vector_x * punto_y - vector_y * punto_x < 0)
+				{
+					dentro = 0;
+					break;
+				}
+			}
+			
+			if (dentro)
+			{
+				if (pixel_x >= informacion_variable->xres || pixel_y >= informacion_variable->yres)
+					continue;
+					
 				long int ubicacion = (pixel_y + informacion_variable->yoffset) * informacion_fija->line_length +
 									 (pixel_x + informacion_variable->xoffset) * (informacion_variable->bits_per_pixel / 8);
 				
@@ -126,27 +136,37 @@ void dibujar_heptagono(int posicion_x, int posicion_y, int color)
 		vertices_y[indice] = centro_y + (int)(radio * sin(angulo));
 	}
 	
-	// Dibujar lineas entre vertices consecutivos
-	for (int indice = 0; indice < numero_lados; indice++)
+	// Rellenar el heptagono pixel por pixel (similar a cuadrado)
+	for (int fila = 0; fila < TAMANO_FIGURA; fila++)
 	{
-		int siguiente = (indice + 1) % numero_lados;
-		int inicio_x = vertices_x[indice];
-		int inicio_y = vertices_y[indice];
-		int fin_x = vertices_x[siguiente];
-		int fin_y = vertices_y[siguiente];
-		
-		// Dibujar linea simple punto por punto
-		int pasos = abs(fin_x - inicio_x) > abs(fin_y - inicio_y) ? abs(fin_x - inicio_x) : abs(fin_y - inicio_y);
-		if (pasos == 0) pasos = 1;
-		
-		for (int paso = 0; paso <= pasos; paso++)
+		for (int columna = 0; columna < TAMANO_FIGURA; columna++)
 		{
-			int pixel_x = inicio_x + (fin_x - inicio_x) * paso / pasos;
-			int pixel_y = inicio_y + (fin_y - inicio_y) * paso / pasos;
+			int pixel_x = posicion_x + columna;
+			int pixel_y = posicion_y + fila;
 			
-			if (pixel_x >= 0 && pixel_x < informacion_variable->xres && 
-			    pixel_y >= 0 && pixel_y < informacion_variable->yres)
+			// Verificar si el punto esta dentro del heptagono
+			int dentro = 1;
+			for (int indice = 0; indice < numero_lados; indice++)
 			{
+				int siguiente = (indice + 1) % numero_lados;
+				int vector_x = vertices_x[siguiente] - vertices_x[indice];
+				int vector_y = vertices_y[siguiente] - vertices_y[indice];
+				int punto_x = pixel_x - vertices_x[indice];
+				int punto_y = pixel_y - vertices_y[indice];
+				
+				// Producto cruz para verificar de que lado esta el punto
+				if (vector_x * punto_y - vector_y * punto_x < 0)
+				{
+					dentro = 0;
+					break;
+				}
+			}
+			
+			if (dentro)
+			{
+				if (pixel_x >= informacion_variable->xres || pixel_y >= informacion_variable->yres)
+					continue;
+					
 				long int ubicacion = (pixel_y + informacion_variable->yoffset) * informacion_fija->line_length +
 									 (pixel_x + informacion_variable->xoffset) * (informacion_variable->bits_per_pixel / 8);
 				
@@ -176,27 +196,37 @@ void dibujar_decagono(int posicion_x, int posicion_y, int color)
 		vertices_y[indice] = centro_y + (int)(radio * sin(angulo));
 	}
 	
-	// Dibujar lineas entre vertices consecutivos
-	for (int indice = 0; indice < numero_lados; indice++)
+	// Rellenar el decagono pixel por pixel (similar a cuadrado)
+	for (int fila = 0; fila < TAMANO_FIGURA; fila++)
 	{
-		int siguiente = (indice + 1) % numero_lados;
-		int inicio_x = vertices_x[indice];
-		int inicio_y = vertices_y[indice];
-		int fin_x = vertices_x[siguiente];
-		int fin_y = vertices_y[siguiente];
-		
-		// Dibujar linea simple punto por punto
-		int pasos = abs(fin_x - inicio_x) > abs(fin_y - inicio_y) ? abs(fin_x - inicio_x) : abs(fin_y - inicio_y);
-		if (pasos == 0) pasos = 1;
-		
-		for (int paso = 0; paso <= pasos; paso++)
+		for (int columna = 0; columna < TAMANO_FIGURA; columna++)
 		{
-			int pixel_x = inicio_x + (fin_x - inicio_x) * paso / pasos;
-			int pixel_y = inicio_y + (fin_y - inicio_y) * paso / pasos;
+			int pixel_x = posicion_x + columna;
+			int pixel_y = posicion_y + fila;
 			
-			if (pixel_x >= 0 && pixel_x < informacion_variable->xres && 
-			    pixel_y >= 0 && pixel_y < informacion_variable->yres)
+			// Verificar si el punto esta dentro del decagono
+			int dentro = 1;
+			for (int indice = 0; indice < numero_lados; indice++)
 			{
+				int siguiente = (indice + 1) % numero_lados;
+				int vector_x = vertices_x[siguiente] - vertices_x[indice];
+				int vector_y = vertices_y[siguiente] - vertices_y[indice];
+				int punto_x = pixel_x - vertices_x[indice];
+				int punto_y = pixel_y - vertices_y[indice];
+				
+				// Producto cruz para verificar de que lado esta el punto
+				if (vector_x * punto_y - vector_y * punto_x < 0)
+				{
+					dentro = 0;
+					break;
+				}
+			}
+			
+			if (dentro)
+			{
+				if (pixel_x >= informacion_variable->xres || pixel_y >= informacion_variable->yres)
+					continue;
+					
 				long int ubicacion = (pixel_y + informacion_variable->yoffset) * informacion_fija->line_length +
 									 (pixel_x + informacion_variable->xoffset) * (informacion_variable->bits_per_pixel / 8);
 				
