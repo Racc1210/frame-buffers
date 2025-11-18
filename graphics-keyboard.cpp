@@ -128,9 +128,19 @@ void handlekeys () {
 			printf ("\rType a command: %s", buffer);
 			memset (buffer, 0, p+1);
 			p = 0;
-		} else if (p < SIZE) {
+		} else if ((input == 127 || input == 8) && p > 0) { // Backspace
+			p--;
+			buffer[p] = 0;
+			// Limpia la línea antes de imprimir el buffer
+			printf("\rType a command: ");
+			for (int i = 0; i < SIZE; i++) printf(" ");
+			printf("\rType a command: %s", buffer);
+		} else if (input >= 32 && input < 127 && p < SIZE) { // Caracteres imprimibles
 			buffer[p++] = input;
-			printf ("\rType a command: %s", buffer);
+			buffer[p] = 0;
+			printf("\rType a command: ");
+			for (int i = 0; i < SIZE; i++) printf(" ");
+			printf("\rType a command: %s", buffer);
 		}
 	} while (!(input == 'x' && p == 1));
 }
