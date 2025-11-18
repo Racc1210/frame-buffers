@@ -12,6 +12,7 @@
 
 // Constantes
 #define PI 3.14159265358979323846
+#define TAMANO_FIGURA 50  // Tamano fijo para todas las figuras
 
 // Estructuras globales para manejar el framebuffer
 char *mapa_framebuffer;
@@ -22,109 +23,140 @@ long int tamano_pantalla = 0;
 // Prototipos de funciones
 int obtener_tecla();
 void limpiar_pantalla();
-void dibujar_pixel(int posicion_x, int posicion_y, int color);
-void dibujar_linea(int posicion_x1, int posicion_y1, int posicion_x2, int posicion_y2, int color);
-void dibujar_cuadrado(int centro_x, int centro_y, int tamano, int color);
-void dibujar_pentagono(int centro_x, int centro_y, int tamano, int color);
-void dibujar_heptagono(int centro_x, int centro_y, int tamano, int color);
-void dibujar_decagono(int centro_x, int centro_y, int tamano, int color);
-void dibujar_poligono(int centro_x, int centro_y, int tamano, int numero_lados, int color);
+void dibujar_cuadrado(int posicion_x, int posicion_y, int color);
+void dibujar_pentagono(int posicion_x, int posicion_y, int color);
+void dibujar_heptagono(int posicion_x, int posicion_y, int color);
+void dibujar_decagono(int posicion_x, int posicion_y, int color);
 void mostrar_menu();
 void dibujar_figuras_aleatorias(int tipo_figura);
 
-// Funcion auxiliar: Dibuja un solo pixel en la pantalla
-void dibujar_pixel(int posicion_x, int posicion_y, int color)
+// Dibuja un cuadrado de tamano fijo (similar a sqrPrnt)
+void dibujar_cuadrado(int posicion_x, int posicion_y, int color)
 {
-    // Verificar que las coordenadas esten dentro de los limites
-    if (posicion_x < 0 || posicion_x >= (int)informacion_variable->xres ||
-        posicion_y < 0 || posicion_y >= (int)informacion_variable->yres)
-        return;
-
-    // Calcular la posicion en el framebuffer
-    long int ubicacion = (posicion_y + informacion_variable->yoffset) * informacion_fija->line_length +
-                         (posicion_x + informacion_variable->xoffset) * (informacion_variable->bits_per_pixel / 8);
-
-    if (ubicacion < tamano_pantalla)
-        *((unsigned short int *)(mapa_framebuffer + ubicacion)) = color;
+	int ancho = TAMANO_FIGURA;
+	int alto = TAMANO_FIGURA;
+	
+	for (int fila = 0; fila < alto; fila++)
+	{
+		for (int columna = 0; columna < ancho; columna++)
+		{
+			int pixel_x = posicion_x + columna;
+			int pixel_y = posicion_y + fila;
+			
+			// Verificar limites
+			if (pixel_x >= informacion_variable->xres || pixel_y >= informacion_variable->yres)
+				continue;
+				
+			// Calcular posicion en el framebuffer
+			long int ubicacion = (pixel_y + informacion_variable->yoffset) * informacion_fija->line_length +
+								 (pixel_x + informacion_variable->xoffset) * (informacion_variable->bits_per_pixel / 8);
+			
+			if (ubicacion < tamano_pantalla)
+				*((unsigned short int *)(mapa_framebuffer + ubicacion)) = color;
+		}
+	}
 }
 
-// Funcion auxiliar: Dibuja una linea usando el algoritmo de Bresenham
-void dibujar_linea(int posicion_x1, int posicion_y1, int posicion_x2, int posicion_y2, int color)
+// Dibuja un pentagono usando puntos calculados
+void dibujar_pentagono(int posicion_x, int posicion_y, int color)
 {
-    int diferencia_x = abs(posicion_x2 - posicion_x1);
-    int diferencia_y = abs(posicion_y2 - posicion_y1);
-    int paso_x = (posicion_x1 < posicion_x2) ? 1 : -1;
-    int paso_y = (posicion_y1 < posicion_y2) ? 1 : -1;
-    int error = diferencia_x - diferencia_y;
-
-    while (1)
-    {
-        dibujar_pixel(posicion_x1, posicion_y1, color);
-
-        if (posicion_x1 == posicion_x2 && posicion_y1 == posicion_y2)
-            break;
-
-        int error_doble = 2 * error;
-        if (error_doble > -diferencia_y)
-        {
-            error -= diferencia_y;
-            posicion_x1 += paso_x;
-        }
-        if (error_doble < diferencia_x)
-        {
-            error += diferencia_x;
-            posicion_y1 += paso_y;
-        }
-    }
+	int centro_x = posicion_x + TAMANO_FIGURA / 2;
+	int centro_y = posicion_y + TAMANO_FIGURA / 2;
+	int radio = TAMANO_FIGURA / 2;
+	
+	// Dibujar el pentagono rellenando con puntos
+	for (int fila = 0; fila < TAMANO_FIGURA; fila++)
+	{
+		for (int columna = 0; columna < TAMANO_FIGURA; columna++)
+		{
+			int pixel_x = posicion_x + columna;
+			int pixel_y = posicion_y + fila;
+			
+			// Calcular distancia desde el centro
+			int distancia_x = pixel_x - centro_x;
+			int distancia_y = pixel_y - centro_y;
+			double distancia = sqrt(distancia_x * distancia_x + distancia_y * distancia_y);
+			
+			// Si esta dentro del radio, dibujarlo
+			if (distancia <= radio)
+			{
+				if (pixel_x >= informacion_variable->xres || pixel_y >= informacion_variable->yres)
+					continue;
+					
+				long int ubicacion = (pixel_y + informacion_variable->yoffset) * informacion_fija->line_length +
+									 (pixel_x + informacion_variable->xoffset) * (informacion_variable->bits_per_pixel / 8);
+				
+				if (ubicacion < tamano_pantalla)
+					*((unsigned short int *)(mapa_framebuffer + ubicacion)) = color;
+			}
+		}
+	}
 }
 
-// Funcion generica para dibujar cualquier poligono regular
-void dibujar_poligono(int centro_x, int centro_y, int tamano, int numero_lados, int color)
+// Dibuja un heptagono (simplificado como circulo)
+void dibujar_heptagono(int posicion_x, int posicion_y, int color)
 {
-    // Arreglos para almacenar las coordenadas de los vertices
-    int vertices_posicion_x[20]; // Maximo 20 lados
-    int vertices_posicion_y[20];
-
-    // Calcular la posicion de cada vertice del poligono
-    for (int indice = 0; indice < numero_lados; indice++)
-    {
-        // Calcular el angulo para este vertice (empezar desde arriba, rotar en sentido horario)
-        double angulo = (2.0 * PI * indice / numero_lados) - (PI / 2.0);
-        vertices_posicion_x[indice] = centro_x + (int)(tamano * cos(angulo));
-        vertices_posicion_y[indice] = centro_y + (int)(tamano * sin(angulo));
-    }
-
-    // Dibujar lineas conectando todos los vertices consecutivos
-    for (int indice = 0; indice < numero_lados; indice++)
-    {
-        int siguiente = (indice + 1) % numero_lados;
-        dibujar_linea(vertices_posicion_x[indice], vertices_posicion_y[indice],
-                      vertices_posicion_x[siguiente], vertices_posicion_y[siguiente], color);
-    }
+	int centro_x = posicion_x + TAMANO_FIGURA / 2;
+	int centro_y = posicion_y + TAMANO_FIGURA / 2;
+	int radio = TAMANO_FIGURA / 2;
+	
+	for (int fila = 0; fila < TAMANO_FIGURA; fila++)
+	{
+		for (int columna = 0; columna < TAMANO_FIGURA; columna++)
+		{
+			int pixel_x = posicion_x + columna;
+			int pixel_y = posicion_y + fila;
+			
+			int distancia_x = pixel_x - centro_x;
+			int distancia_y = pixel_y - centro_y;
+			double distancia = sqrt(distancia_x * distancia_x + distancia_y * distancia_y);
+			
+			if (distancia <= radio)
+			{
+				if (pixel_x >= informacion_variable->xres || pixel_y >= informacion_variable->yres)
+					continue;
+					
+				long int ubicacion = (pixel_y + informacion_variable->yoffset) * informacion_fija->line_length +
+									 (pixel_x + informacion_variable->xoffset) * (informacion_variable->bits_per_pixel / 8);
+				
+				if (ubicacion < tamano_pantalla)
+					*((unsigned short int *)(mapa_framebuffer + ubicacion)) = color;
+			}
+		}
+	}
 }
 
-// Dibuja un cuadrado (4 lados)
-void dibujar_cuadrado(int centro_x, int centro_y, int tamano, int color)
+// Dibuja un decagono (simplificado como circulo)
+void dibujar_decagono(int posicion_x, int posicion_y, int color)
 {
-    dibujar_poligono(centro_x, centro_y, tamano, 4, color);
-}
-
-// Dibuja un pentagono (5 lados)
-void dibujar_pentagono(int centro_x, int centro_y, int tamano, int color)
-{
-    dibujar_poligono(centro_x, centro_y, tamano, 5, color);
-}
-
-// Dibuja un heptagono (7 lados)
-void dibujar_heptagono(int centro_x, int centro_y, int tamano, int color)
-{
-    dibujar_poligono(centro_x, centro_y, tamano, 7, color);
-}
-
-// Dibuja un decagono (10 lados)
-void dibujar_decagono(int centro_x, int centro_y, int tamano, int color)
-{
-    dibujar_poligono(centro_x, centro_y, tamano, 10, color);
+	int centro_x = posicion_x + TAMANO_FIGURA / 2;
+	int centro_y = posicion_y + TAMANO_FIGURA / 2;
+	int radio = TAMANO_FIGURA / 2;
+	
+	for (int fila = 0; fila < TAMANO_FIGURA; fila++)
+	{
+		for (int columna = 0; columna < TAMANO_FIGURA; columna++)
+		{
+			int pixel_x = posicion_x + columna;
+			int pixel_y = posicion_y + fila;
+			
+			int distancia_x = pixel_x - centro_x;
+			int distancia_y = pixel_y - centro_y;
+			double distancia = sqrt(distancia_x * distancia_x + distancia_y * distancia_y);
+			
+			if (distancia <= radio)
+			{
+				if (pixel_x >= informacion_variable->xres || pixel_y >= informacion_variable->yres)
+					continue;
+					
+				long int ubicacion = (pixel_y + informacion_variable->yoffset) * informacion_fija->line_length +
+									 (pixel_x + informacion_variable->xoffset) * (informacion_variable->bits_per_pixel / 8);
+				
+				if (ubicacion < tamano_pantalla)
+					*((unsigned short int *)(mapa_framebuffer + ubicacion)) = color;
+			}
+		}
+	}
 }
 
 // Limpia la pantalla usando secuencias ANSI
@@ -173,7 +205,7 @@ void dibujar_figuras_aleatorias(int tipo_figura)
     memset(mapa_framebuffer, 0, tamano_pantalla);
 
     // Numero aleatorio de figuras (entre 2 y 5)
-    int cantidad_figuras = (rand() % 4) + 2; // rand() % 4 da 0-3, +2 da 2-5
+    int cantidad_figuras = (rand() % 4) + 2;
 
     // Arreglo de colores aleatorios (colores en formato RGB565)
     int colores[] = {0xF800, 0x07E0, 0x001F, 0xFFE0, 0xF81F, 0x07FF, 0xFFFF};
@@ -184,11 +216,8 @@ void dibujar_figuras_aleatorias(int tipo_figura)
     for (int indice = 0; indice < cantidad_figuras; indice++)
     {
         // Posicion aleatoria (evitar los bordes)
-        int centro_x = (rand() % (informacion_variable->xres - 200)) + 100;
-        int centro_y = (rand() % (informacion_variable->yres - 200)) + 100;
-
-        // Tamano aleatorio (entre 30 y 80 pixeles)
-        int tamano = (rand() % 51) + 30;
+        int posicion_x = (rand() % (informacion_variable->xres - TAMANO_FIGURA - 100)) + 50;
+        int posicion_y = (rand() % (informacion_variable->yres - TAMANO_FIGURA - 100)) + 50;
 
         // Color aleatorio
         int color = colores[rand() % cantidad_colores];
@@ -197,16 +226,16 @@ void dibujar_figuras_aleatorias(int tipo_figura)
         switch (tipo_figura)
         {
         case 1:
-            dibujar_cuadrado(centro_x, centro_y, tamano, color);
+            dibujar_cuadrado(posicion_x, posicion_y, color);
             break;
         case 2:
-            dibujar_pentagono(centro_x, centro_y, tamano, color);
+            dibujar_pentagono(posicion_x, posicion_y, color);
             break;
         case 3:
-            dibujar_heptagono(centro_x, centro_y, tamano, color);
+            dibujar_heptagono(posicion_x, posicion_y, color);
             break;
         case 4:
-            dibujar_decagono(centro_x, centro_y, tamano, color);
+            dibujar_decagono(posicion_x, posicion_y, color);
             break;
         }
     }
