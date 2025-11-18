@@ -29,35 +29,216 @@ void handlekeys();
 // Drawing helpers
 void putPixel(int x, int y, unsigned int argb);
 unsigned int ARGB(unsigned char a, unsigned char r, unsigned char g, unsigned char b);
-void drawLine(int x0, int y0, int x1, int y1, unsigned int color);
-void drawPolygon(int cx, int cy, int radius, int sides, float rotation, unsigned int color);
 void drawSquare(int x, int y, int w, int h, unsigned int color);
+void fillPolygon(int cx, int cy, int radius, int sides, float rotation, unsigned int color);
 void drawRandomShapes(int sides);
 
-// Function implementation
+// ================= IMPLEMENTACIÓN =================
+
+unsigned int ARGB(unsigned char a, unsigned char r, unsigned char g, unsigned char b)
+{
+    return ((unsigned int)a << 24) | ((unsigned int)r << 16) | ((unsigned int)g << 8) | (unsigned int)b;
+}
+
+void putPixel(int x, int y, unsigned int argb)
+{
+    if (!vinfo || !finfo || !fbmap)
+        return;
+    if (x < 0 || y < 0 || x >= (int)vinfo->xres || y >= (int)vinfo->yres)
+        return;
+
+    int bpp = vinfo->bits_per_pixel;
+    long int offset = (y + vinfo->yoffset) * finfo->line_length + (x + vinfo->xoffset) * (bpp / 8);
+    if (offset < 0 || offset + (bpp / 8) > screensize)
+        return;
+
+    if (bpp == 32)
+    {
+        *((unsigned int *)(fbmap + offset)) = argb;
+    }
+    else if (bpp == 16)
+    {
+        unsigned char r = (argb >> 16) & 0xFF;
+        unsigned char g = (argb >> 8) & 0xFF;
+        unsigned char b = (argb) & 0xFF;
+        unsigned short rgb565 = ((r >> 3) << 11) | ((g >> 2) << 5) | (b >> 3);
+        *((unsigned short *)(fbmap + offset)) = rgb565;
+    }
+}
+
 void drawSquare(int x, int y, int w, int h, unsigned int color)
 {
     for (int ty = 0; ty < h; ++ty)
     {
         for (int tx = 0; tx < w; ++tx)
         {
-            int px = x + tx;
-            int py = y + ty;
-            putPixel(px, py, color);
+            putPixel(x + tx, y + ty, color);
         }
     }
 }
 
+void fillPolygon(int cx, int cy, int radius, int sides, float rotation, unsigned int color)
+{
+    if (sides < 3)
+        return;
+
+    // Calcular vértices
+    int vx[sides], vy[sides];
+    for (int i = 0; i < sides; ++i)
+    {
+        float angle = rotation + 2.0f * M_PI * i / sides;
+        vx[i] = cx + (int)(cosf(angle) * radius);
+        vy[i] = cy + (int)(sinf(angle) * radius);
+    }
+
+    // Límites verticales
+    int ymin = vy[0], ymax = vy[0];
+    for (int i = 1; i < sides; ++i)
+    {
+        if (vy[i] < ymin)
+            ymin = vy[i];
+        if (vy[i] > ymax)
+            ymax = vy[i];
+    }
+
+    // Scanline
+    for (int y = ymin; y <= ymax; ++y)
+    {
+        int interx[sides];
+        int count = 0;
+
+        for (int i = 0; i < sides; ++i)
+        {
+            int j = (i + 1) % sides;
+            int x1 = vx[i], y1 = vy[i];
+            int x2 = vx[j], y2 = vy[j];
+
+            if ((y1 <= y && y2 > y) || (y2 <= y && y1 > y))
+            {
+                int x = x1 + (y - y1) * (x2 - x1) / (y2 - y1);
+                interx[count++] = x;
+            }
+        }
+
+        // Ordenar intersecciones
+        for (int i = 0; i < count - 1; ++i)
+        {
+            for (int j = i + 1; j < count; ++j)
+            {
+                if (interx[i] > interx[j])
+                {
+                    int tmp = interx[i];
+                    interx[i] = interx[j];
+                    interx[j] = tmp;
+                }
+            }
+        }
+
+        // Pintar entre pares
+        for (int i = 0; i < count; i += 2)
+        {
+            if (i + 1 < count)
+            {
+                for (int x = interx[i]; x <= interx[i + 1]; ++x)
+                {
+                    putPixel(x, y, color);
+                }
+            }
+        }
+    }
+}
+
+void drawRandomShapes(int sides)
+{
+    int count = 2 + rand() % 4; // entre 2 y 5
+
+    unsigned int colors[] = {
+        ARGB(0xFF, 0xFF, 0xFF, 0xFF),
+        ARGB(0xFF, 0xFF, 0x40, 0x40),
+        ARGB(0xFF, 0x40, 0xFF, 0x40),
+        ARGB(0xFF, 0x40, 0x40, 0xFF),
+        ARGB(0xFF, 0xFF, 0xD7, 0x00)};
+    int paletteSize = sizeof(colors) / sizeof(colors[0]);
+
+    int w = (int)vinfo->xres;
+    int h = (int)vinfo->yres;
+
+    for (int i = 0; i < count; ++i)
+    {
+        unsigned int color = colors[rand() % paletteSize];
+        int margin = (w < h ? w : h) / 20;
+        int cx = margin + rand() % (w - 2 * margin);
+        int cy = margin + rand() % (h - 2 * margin);
+        int maxRadius = (w < h ? w : h) / 6;
+        int minRadius = (w < h ? w : h) / 12;
+        int radius = minRadius + rand() % (maxRadius - minRadius + 1);
+        float rotation = (float)(rand() % 628) / 100.0f;
+
+        if (sides == 4)
+        {
+            drawSquare(cx - radius, cy - radius, radius * 2, radius * 2, color);
+        }
+        else
+        {
+            fillPolygon(cx, cy, radius, sides, rotation, color);
+        }
+    }
+}
+
+void handlecommand(char *command)
+{
+    char c = command[0];
+    switch (c)
+    {
+    case 'S':
+        drawRandomShapes(4);
+        break;
+    case 'P':
+        drawRandomShapes(5);
+        break;
+    case 'H':
+        drawRandomShapes(7);
+        break;
+    case 'D':
+        drawRandomShapes(10);
+        break;
+    case '#':
+        clearfb();
+        clearscreen();
+        break;
+    default:
+        printf("\nComandos:\n");
+        printf("  S = Cuadrados\n");
+        printf("  P = Pentágonos\n");
+        printf("  H = Heptágonos\n");
+        printf("  D = Decágonos\n");
+        printf("  # = Limpiar pantalla\n");
+        printf("  x = Salir\n\n");
+        break;
+    }
+}
+
+int getch()
+{
+    int c;
+    struct termios oldt, newt;
+    tcgetattr(STDIN_FILENO, &oldt);
+    newt = oldt;
+    newt.c_lflag &= ~(ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+    c = getchar();
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+    return c;
+}
+
 void clearscreen()
 {
-    // Limpiar consola
     printf("\033[2J\033[H");
     fflush(stdout);
 }
 
 void clearfb()
 {
-    // Limpiar framebuffer (pantalla) a negro
     if (fbmap && screensize > 0)
     {
         memset(fbmap, 0, screensize);
