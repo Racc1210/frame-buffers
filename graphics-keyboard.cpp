@@ -108,31 +108,38 @@ int getnumber()
 	fflush(stdout);
 
 	char c;
-	while (1) {
+	while (1)
+	{
 		c = getch();
-		if (c == 10) { // Enter
+		if (c == 10)
+		{ // Enter
 			break;
-		} else if ((c == 127 || c == 8) && p > 0) { // Backspace
+		}
+		else if ((c == 127 || c == 8) && p > 0)
+		{ // Backspace
 			p--;
 			numbuf[p] = 0;
 			// redraw prompt + buffer
 			printf("\r");
-			for (int i = 0; i < 40; i++) printf(" ");
+			for (int i = 0; i < 40; i++)
+				printf(" ");
 			printf("\r#: %s", numbuf);
 			fflush(stdout);
-		} else if (c >= '0' && c <= '9' && p < (int)sizeof(numbuf) - 1) {
+		}
+		else if (c >= '0' && c <= '9' && p < (int)sizeof(numbuf) - 1)
+		{
 			numbuf[p++] = c;
 			numbuf[p] = 0;
 			printf("%c", c);
 			fflush(stdout);
 		}
-		// ignore other keys
 	}
 
 	// finish line visually
 	printf("\n");
 	int n = 0;
-	if (p > 0) n = atoi(numbuf);
+	if (p > 0)
+		n = atoi(numbuf);
 	return n;
 }
 
@@ -159,6 +166,7 @@ void handlekeys()
 			p = 0;
 			printf("Type a command: ");
 			fflush(stdout);
+			clearscreen();
 		}
 		else if ((input == 127 || input == 8) && p > 0) // Backspace
 		{
