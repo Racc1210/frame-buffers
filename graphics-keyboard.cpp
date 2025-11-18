@@ -100,19 +100,39 @@ int getch()
 
 int getnumber()
 {
+	// Read a number from single-character input, support backspace
+	char numbuf[32];
+	int p = 0;
+	memset(numbuf, 0, sizeof(numbuf));
 	printf("\r#: ");
-	int n = 0;
+	fflush(stdout);
+
 	char c;
-	do
-	{
+	while (1) {
 		c = getch();
-		if (c > 47 && c < 58)
-		{
+		if (c == 10) { // Enter
+			break;
+		} else if ((c == 127 || c == 8) && p > 0) { // Backspace
+			p--;
+			numbuf[p] = 0;
+			// redraw prompt + buffer
+			printf("\r");
+			for (int i = 0; i < 40; i++) printf(" ");
+			printf("\r#: %s", numbuf);
+			fflush(stdout);
+		} else if (c >= '0' && c <= '9' && p < (int)sizeof(numbuf) - 1) {
+			numbuf[p++] = c;
+			numbuf[p] = 0;
 			printf("%c", c);
-			n = (n * 10) + (c - 48);
+			fflush(stdout);
 		}
-	} while (c != 10);
-	printf("!");
+		// ignore other keys
+	}
+
+	// finish line visually
+	printf("\n");
+	int n = 0;
+	if (p > 0) n = atoi(numbuf);
 	return n;
 }
 
