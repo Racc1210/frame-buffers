@@ -12,7 +12,7 @@
 
 // Constantes
 #define PI 3.14159265358979323846
-#define TAMANO_FIGURA 50  // Tamano fijo para todas las figuras
+#define TAMANO_FIGURA 100 // Tamano fijo para todas las figuras
 
 // Estructuras globales para manejar el framebuffer
 char *mapa_framebuffer;
@@ -33,130 +33,130 @@ void dibujar_figuras_aleatorias(int tipo_figura);
 // Dibuja un cuadrado de tamano fijo (similar a sqrPrnt)
 void dibujar_cuadrado(int posicion_x, int posicion_y, int color)
 {
-	int ancho = TAMANO_FIGURA;
-	int alto = TAMANO_FIGURA;
-	
-	for (int fila = 0; fila < alto; fila++)
-	{
-		for (int columna = 0; columna < ancho; columna++)
-		{
-			int pixel_x = posicion_x + columna;
-			int pixel_y = posicion_y + fila;
-			
-			// Verificar limites
-			if (pixel_x >= informacion_variable->xres || pixel_y >= informacion_variable->yres)
-				continue;
-				
-			// Calcular posicion en el framebuffer
-			long int ubicacion = (pixel_y + informacion_variable->yoffset) * informacion_fija->line_length +
-								 (pixel_x + informacion_variable->xoffset) * (informacion_variable->bits_per_pixel / 8);
-			
-			if (ubicacion < tamano_pantalla)
-				*((unsigned short int *)(mapa_framebuffer + ubicacion)) = color;
-		}
-	}
+    int ancho = TAMANO_FIGURA;
+    int alto = TAMANO_FIGURA;
+
+    for (int fila = 0; fila < alto; fila++)
+    {
+        for (int columna = 0; columna < ancho; columna++)
+        {
+            int pixel_x = posicion_x + columna;
+            int pixel_y = posicion_y + fila;
+
+            // Verificar limites
+            if (pixel_x >= informacion_variable->xres || pixel_y >= informacion_variable->yres)
+                continue;
+
+            // Calcular posicion en el framebuffer
+            long int ubicacion = (pixel_y + informacion_variable->yoffset) * informacion_fija->line_length +
+                                 (pixel_x + informacion_variable->xoffset) * (informacion_variable->bits_per_pixel / 8);
+
+            if (ubicacion < tamano_pantalla)
+                *((unsigned short int *)(mapa_framebuffer + ubicacion)) = color;
+        }
+    }
 }
 
 // Dibuja un pentagono usando puntos calculados
 void dibujar_pentagono(int posicion_x, int posicion_y, int color)
 {
-	int centro_x = posicion_x + TAMANO_FIGURA / 2;
-	int centro_y = posicion_y + TAMANO_FIGURA / 2;
-	int radio = TAMANO_FIGURA / 2;
-	
-	// Dibujar el pentagono rellenando con puntos
-	for (int fila = 0; fila < TAMANO_FIGURA; fila++)
-	{
-		for (int columna = 0; columna < TAMANO_FIGURA; columna++)
-		{
-			int pixel_x = posicion_x + columna;
-			int pixel_y = posicion_y + fila;
-			
-			// Calcular distancia desde el centro
-			int distancia_x = pixel_x - centro_x;
-			int distancia_y = pixel_y - centro_y;
-			double distancia = sqrt(distancia_x * distancia_x + distancia_y * distancia_y);
-			
-			// Si esta dentro del radio, dibujarlo
-			if (distancia <= radio)
-			{
-				if (pixel_x >= informacion_variable->xres || pixel_y >= informacion_variable->yres)
-					continue;
-					
-				long int ubicacion = (pixel_y + informacion_variable->yoffset) * informacion_fija->line_length +
-									 (pixel_x + informacion_variable->xoffset) * (informacion_variable->bits_per_pixel / 8);
-				
-				if (ubicacion < tamano_pantalla)
-					*((unsigned short int *)(mapa_framebuffer + ubicacion)) = color;
-			}
-		}
-	}
+    int centro_x = posicion_x + TAMANO_FIGURA / 2;
+    int centro_y = posicion_y + TAMANO_FIGURA / 2;
+    int radio = TAMANO_FIGURA / 2;
+
+    // Dibujar el pentagono rellenando con puntos
+    for (int fila = 0; fila < TAMANO_FIGURA; fila++)
+    {
+        for (int columna = 0; columna < TAMANO_FIGURA; columna++)
+        {
+            int pixel_x = posicion_x + columna;
+            int pixel_y = posicion_y + fila;
+
+            // Calcular distancia desde el centro
+            int distancia_x = pixel_x - centro_x;
+            int distancia_y = pixel_y - centro_y;
+            double distancia = sqrt(distancia_x * distancia_x + distancia_y * distancia_y);
+
+            // Si esta dentro del radio, dibujarlo
+            if (distancia <= radio)
+            {
+                if (pixel_x >= informacion_variable->xres || pixel_y >= informacion_variable->yres)
+                    continue;
+
+                long int ubicacion = (pixel_y + informacion_variable->yoffset) * informacion_fija->line_length +
+                                     (pixel_x + informacion_variable->xoffset) * (informacion_variable->bits_per_pixel / 8);
+
+                if (ubicacion < tamano_pantalla)
+                    *((unsigned short int *)(mapa_framebuffer + ubicacion)) = color;
+            }
+        }
+    }
 }
 
 // Dibuja un heptagono (simplificado como circulo)
 void dibujar_heptagono(int posicion_x, int posicion_y, int color)
 {
-	int centro_x = posicion_x + TAMANO_FIGURA / 2;
-	int centro_y = posicion_y + TAMANO_FIGURA / 2;
-	int radio = TAMANO_FIGURA / 2;
-	
-	for (int fila = 0; fila < TAMANO_FIGURA; fila++)
-	{
-		for (int columna = 0; columna < TAMANO_FIGURA; columna++)
-		{
-			int pixel_x = posicion_x + columna;
-			int pixel_y = posicion_y + fila;
-			
-			int distancia_x = pixel_x - centro_x;
-			int distancia_y = pixel_y - centro_y;
-			double distancia = sqrt(distancia_x * distancia_x + distancia_y * distancia_y);
-			
-			if (distancia <= radio)
-			{
-				if (pixel_x >= informacion_variable->xres || pixel_y >= informacion_variable->yres)
-					continue;
-					
-				long int ubicacion = (pixel_y + informacion_variable->yoffset) * informacion_fija->line_length +
-									 (pixel_x + informacion_variable->xoffset) * (informacion_variable->bits_per_pixel / 8);
-				
-				if (ubicacion < tamano_pantalla)
-					*((unsigned short int *)(mapa_framebuffer + ubicacion)) = color;
-			}
-		}
-	}
+    int centro_x = posicion_x + TAMANO_FIGURA / 2;
+    int centro_y = posicion_y + TAMANO_FIGURA / 2;
+    int radio = TAMANO_FIGURA / 2;
+
+    for (int fila = 0; fila < TAMANO_FIGURA; fila++)
+    {
+        for (int columna = 0; columna < TAMANO_FIGURA; columna++)
+        {
+            int pixel_x = posicion_x + columna;
+            int pixel_y = posicion_y + fila;
+
+            int distancia_x = pixel_x - centro_x;
+            int distancia_y = pixel_y - centro_y;
+            double distancia = sqrt(distancia_x * distancia_x + distancia_y * distancia_y);
+
+            if (distancia <= radio)
+            {
+                if (pixel_x >= informacion_variable->xres || pixel_y >= informacion_variable->yres)
+                    continue;
+
+                long int ubicacion = (pixel_y + informacion_variable->yoffset) * informacion_fija->line_length +
+                                     (pixel_x + informacion_variable->xoffset) * (informacion_variable->bits_per_pixel / 8);
+
+                if (ubicacion < tamano_pantalla)
+                    *((unsigned short int *)(mapa_framebuffer + ubicacion)) = color;
+            }
+        }
+    }
 }
 
 // Dibuja un decagono (simplificado como circulo)
 void dibujar_decagono(int posicion_x, int posicion_y, int color)
 {
-	int centro_x = posicion_x + TAMANO_FIGURA / 2;
-	int centro_y = posicion_y + TAMANO_FIGURA / 2;
-	int radio = TAMANO_FIGURA / 2;
-	
-	for (int fila = 0; fila < TAMANO_FIGURA; fila++)
-	{
-		for (int columna = 0; columna < TAMANO_FIGURA; columna++)
-		{
-			int pixel_x = posicion_x + columna;
-			int pixel_y = posicion_y + fila;
-			
-			int distancia_x = pixel_x - centro_x;
-			int distancia_y = pixel_y - centro_y;
-			double distancia = sqrt(distancia_x * distancia_x + distancia_y * distancia_y);
-			
-			if (distancia <= radio)
-			{
-				if (pixel_x >= informacion_variable->xres || pixel_y >= informacion_variable->yres)
-					continue;
-					
-				long int ubicacion = (pixel_y + informacion_variable->yoffset) * informacion_fija->line_length +
-									 (pixel_x + informacion_variable->xoffset) * (informacion_variable->bits_per_pixel / 8);
-				
-				if (ubicacion < tamano_pantalla)
-					*((unsigned short int *)(mapa_framebuffer + ubicacion)) = color;
-			}
-		}
-	}
+    int centro_x = posicion_x + TAMANO_FIGURA / 2;
+    int centro_y = posicion_y + TAMANO_FIGURA / 2;
+    int radio = TAMANO_FIGURA / 2;
+
+    for (int fila = 0; fila < TAMANO_FIGURA; fila++)
+    {
+        for (int columna = 0; columna < TAMANO_FIGURA; columna++)
+        {
+            int pixel_x = posicion_x + columna;
+            int pixel_y = posicion_y + fila;
+
+            int distancia_x = pixel_x - centro_x;
+            int distancia_y = pixel_y - centro_y;
+            double distancia = sqrt(distancia_x * distancia_x + distancia_y * distancia_y);
+
+            if (distancia <= radio)
+            {
+                if (pixel_x >= informacion_variable->xres || pixel_y >= informacion_variable->yres)
+                    continue;
+
+                long int ubicacion = (pixel_y + informacion_variable->yoffset) * informacion_fija->line_length +
+                                     (pixel_x + informacion_variable->xoffset) * (informacion_variable->bits_per_pixel / 8);
+
+                if (ubicacion < tamano_pantalla)
+                    *((unsigned short int *)(mapa_framebuffer + ubicacion)) = color;
+            }
+        }
+    }
 }
 
 // Limpia la pantalla usando secuencias ANSI
