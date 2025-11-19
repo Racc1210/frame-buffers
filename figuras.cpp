@@ -176,7 +176,6 @@ void dibujar_figuras(int tipo_figura) {
 
     int cantidad_figuras = (rand() % 4) + 2;
 
-    // Colores RGB565 brillantes y de alto contraste
     unsigned short colores[] = {
         0x07fc,
         0x005f,
