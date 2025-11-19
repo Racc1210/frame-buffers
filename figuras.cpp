@@ -176,17 +176,18 @@ void dibujar_figuras(int tipo_figura) {
 
     int cantidad_figuras = (rand() % 4) + 2;
 
+    // Colores RGB565 brillantes: R(5 bits) G(6 bits) B(5 bits)
     unsigned short colores[] = {
         0xFFFF, 
         0xFFE0, 
-        0x07E0, 
-        0x001F, 
-        0xF800, 
-        0xF81F, 
-        0x07FF, 
-        0xFD20, 
-        0xAFE5, 
-        0x1FF8 
+        0x07E0,
+        0x001F,
+        0xF800,
+        0xF81F,
+        0x07FF,
+        0xFD60,
+        0x5FFF,
+        0xBDF7
     };
     int cantidad_colores = sizeof(colores) / sizeof(colores[0]);
 
@@ -210,7 +211,7 @@ void dibujar_figuras(int tipo_figura) {
         int posicion_x = centro_pantalla_x + (int)(radio_posicion * cos(angulo)) - (TAMANO_FIGURA / 2);
         int posicion_y = centro_pantalla_y + (int)(radio_posicion * sin(angulo)) - (TAMANO_FIGURA / 2);
 
-
+        
         int color_indice = rand() % colores_restantes;
         int color = colores_temp[color_indice];
         for (int k = color_indice; k < colores_restantes - 1; k++) {
