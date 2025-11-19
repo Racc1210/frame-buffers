@@ -178,29 +178,19 @@ void dibujar_figuras(int tipo_figura) {
 
     // Colores RGB565 brillantes y de alto contraste
     unsigned short colores[] = {
-        0xFFFF, // Blanco
-        0xF800, // Rojo puro
-        0x07E0, // Verde puro
-        0x001F, // Azul puro
-        0xFFE0, // Amarillo
-        0xF81F, // Magenta
-        0x07FF, // Cyan
-        0xFD20, // Naranja (Rojo+Verde)
-        0x841F, // Violeta (Rojo+Azul)
-        0x07FF  // Turquesa brillante
+        0x07fc,
+        0x005f,
+        0xffe0,
+        0x37e0,
+        0xf800,
+        0xfd60,
+        0x781f,
+        0xf81b
     };
-
     int cantidad_colores = sizeof(colores) / sizeof(colores[0]);
 
     if (cantidad_figuras > cantidad_colores) cantidad_figuras = cantidad_colores;
 
-    // Crear array temporal con los indices disponibles
-    int indices_disponibles[10];
-    for (int i = 0; i < cantidad_colores; i++) { 
-        indices_disponibles[i] = i;
-    }
-
-    int indices_restantes = cantidad_colores;
     printf("\nDibujando %d figuras...", cantidad_figuras);
 
     int centro_pantalla_x = informacion_variable->xres / 2;
@@ -213,14 +203,7 @@ void dibujar_figuras(int tipo_figura) {
         int posicion_x = centro_pantalla_x + (int)(radio_posicion * cos(angulo)) - (TAMANO_FIGURA / 2);
         int posicion_y = centro_pantalla_y + (int)(radio_posicion * sin(angulo)) - (TAMANO_FIGURA / 2);
 
-        int pos_aleatoria = rand() % indices_restantes;
-        int indice_color = indices_disponibles[pos_aleatoria];
-        int color = colores[indice_color];
-        
-        for (int k = pos_aleatoria; k < indices_restantes - 1; k++) {
-            indices_disponibles[k] = indices_disponibles[k + 1];
-        }
-        indices_restantes--;
+        int color = colores[rand() % cantidad_colores];
 
         switch (tipo_figura) {
         case 1:
