@@ -28,106 +28,10 @@ void dibujar_cuadrado(int posicion_x, int posicion_y, int color) {
     }
 }
 
-void dibujar_pentagono(int posicion_x, int posicion_y, int color) {
+void dibujar_figuras_aux(int posicion_x, int posicion_y, int color, int numero_lados) {
     int centro_x = posicion_x + TAMANO_FIGURA / 2;
     int centro_y = posicion_y + TAMANO_FIGURA / 2;
     int radio = TAMANO_FIGURA / 2;
-    int numero_lados = 5;
-
-    int vertices_x[5];
-    int vertices_y[5];
-
-    for (int indice = 0; indice < numero_lados; indice++) {
-        double angulo = (2.0 * PI * indice / numero_lados) - (PI / 2.0);
-        vertices_x[indice] = centro_x + (int)(radio * cos(angulo));
-        vertices_y[indice] = centro_y + (int)(radio * sin(angulo));
-    }
-
-    for (int fila = 0; fila < TAMANO_FIGURA; fila++) {
-        for (int columna = 0; columna < TAMANO_FIGURA; columna++) {
-            int pixel_x = posicion_x + columna;
-            int pixel_y = posicion_y + fila;
-
-            int dentro = 1;
-            for (int indice = 0; indice < numero_lados; indice++) {
-                int siguiente = (indice + 1) % numero_lados;
-                int vector_x = vertices_x[siguiente] - vertices_x[indice];
-                int vector_y = vertices_y[siguiente] - vertices_y[indice];
-                int punto_x = pixel_x - vertices_x[indice];
-                int punto_y = pixel_y - vertices_y[indice];
-
-                if (vector_x * punto_y - vector_y * punto_x < 0) {
-                    dentro = 0;
-                    break;
-                }
-            }
-
-            if (dentro) {
-                if ((unsigned int)pixel_x >= informacion_variable->xres || (unsigned int)pixel_y >= informacion_variable->yres)
-                    continue;
-
-                long int ubicacion = (pixel_y + informacion_variable->yoffset) * informacion_fija->line_length +
-                                     (pixel_x + informacion_variable->xoffset) * (informacion_variable->bits_per_pixel / 8);
-
-                if (ubicacion < tamano_pantalla)
-                    *((unsigned short int *)(mapa_framebuffer + ubicacion)) = color;
-            }
-        }
-    }
-}
-
-void dibujar_heptagono(int posicion_x, int posicion_y, int color) {
-    int centro_x = posicion_x + TAMANO_FIGURA / 2;
-    int centro_y = posicion_y + TAMANO_FIGURA / 2;
-    int radio = TAMANO_FIGURA / 2;
-    int numero_lados = 7;
-
-    int vertices_x[7];
-    int vertices_y[7];
-
-    for (int indice = 0; indice < numero_lados; indice++) {
-        double angulo = (2.0 * PI * indice / numero_lados) - (PI / 2.0);
-        vertices_x[indice] = centro_x + (int)(radio * cos(angulo));
-        vertices_y[indice] = centro_y + (int)(radio * sin(angulo));
-    }
-
-    for (int fila = 0; fila < TAMANO_FIGURA; fila++) {
-        for (int columna = 0; columna < TAMANO_FIGURA; columna++) {
-            int pixel_x = posicion_x + columna;
-            int pixel_y = posicion_y + fila;
-
-            int dentro = 1;
-            for (int indice = 0; indice < numero_lados; indice++) {
-                int siguiente = (indice + 1) % numero_lados;
-                int vector_x = vertices_x[siguiente] - vertices_x[indice];
-                int vector_y = vertices_y[siguiente] - vertices_y[indice];
-                int punto_x = pixel_x - vertices_x[indice];
-                int punto_y = pixel_y - vertices_y[indice];
-
-                if (vector_x * punto_y - vector_y * punto_x < 0) {
-                    dentro = 0;
-                    break;
-                }
-            }
-            if (dentro) {
-                if ((unsigned int)pixel_x >= informacion_variable->xres || (unsigned int)pixel_y >= informacion_variable->yres)
-                    continue;
-
-                long int ubicacion = (pixel_y + informacion_variable->yoffset) * informacion_fija->line_length +
-                                     (pixel_x + informacion_variable->xoffset) * (informacion_variable->bits_per_pixel / 8);
-
-                if (ubicacion < tamano_pantalla)
-                    *((unsigned short int *)(mapa_framebuffer + ubicacion)) = color;
-            }
-        }
-    }
-}
-
-void dibujar_decagono(int posicion_x, int posicion_y, int color) {
-    int centro_x = posicion_x + TAMANO_FIGURA / 2;
-    int centro_y = posicion_y + TAMANO_FIGURA / 2;
-    int radio = TAMANO_FIGURA / 2;
-    int numero_lados = 10;
 
     int vertices_x[10];
     int vertices_y[10];
@@ -171,6 +75,8 @@ void dibujar_decagono(int posicion_x, int posicion_y, int color) {
     }
 }
 
+
+
 void dibujar_figuras(int tipo_figura) {
     memset(mapa_framebuffer, 0, tamano_pantalla);
 
@@ -209,13 +115,13 @@ void dibujar_figuras(int tipo_figura) {
             dibujar_cuadrado(posicion_x, posicion_y, color);
             break;
         case 2:
-            dibujar_pentagono(posicion_x, posicion_y, color);
+            dibujar_figuras_aux(posicion_x, posicion_y, color, 5);
             break;
         case 3:
-            dibujar_heptagono(posicion_x, posicion_y, color);
+            dibujar_figuras_aux(posicion_x, posicion_y, color, 7);
             break;
         case 4:
-            dibujar_decagono(posicion_x, posicion_y, color);
+            dibujar_figuras_aux(posicion_x, posicion_y, color, 10);
             break;
         }
     }
