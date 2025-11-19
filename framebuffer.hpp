@@ -4,7 +4,7 @@
 #include <linux/fb.h>
 
 #define PI 3.14159265358979323846
-#define TAMANO_FIGURA 80
+#define TAMANO_FIGURA 70
 
 extern char *mapa_framebuffer;
 extern struct fb_var_screeninfo *informacion_variable;
