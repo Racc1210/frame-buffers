@@ -20,7 +20,7 @@ run: $(EXECUTABLE)
 	./$(EXECUTABLE)
 
 play:
-    $(MAKE) clean
-    $(MAKE) run
+	$(MAKE) clean
+	$(MAKE) run
 
 .PHONY: all clean run help
