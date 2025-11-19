@@ -1,8 +1,8 @@
 CXX = g++
 
-SOURCES = main.cpp framebuffer.cpp figuras.cpp utilidades.cpp
+SOURCES = utilidades.cpp framebuffer.cpp iguras.cpp main.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
-EXECUTABLE = to04
+EXECUTABLE = to04_polygons
 
 all: $(EXECUTABLE)
 
@@ -16,6 +16,6 @@ clean:
 	rm -f $(OBJECTS) $(EXECUTABLE)
 
 run: $(EXECUTABLE)
-	./$(EXECUTABLE)
+	sudo ./$(EXECUTABLE)
 
 .PHONY: all clean run help
