@@ -179,16 +179,17 @@ void dibujar_figuras(int tipo_figura) {
     // Colores RGB565 brillantes y de alto contraste
     unsigned short colores[] = {
         0xFFFF, // Blanco
+        0xF800, // Rojo puro
+        0x07E0, // Verde puro
+        0x001F, // Azul puro
         0xFFE0, // Amarillo
-        0xF800, // Rojo
-        0x001F, // Azul
         0xF81F, // Magenta
         0x07FF, // Cyan
-        0xFBE0, // Naranja claro
-        0x07F0, // Verde claro
-        0xFC10, // Naranja rojizo
-        0x5D1F  // Violeta
+        0xFD20, // Naranja (Rojo+Verde)
+        0x841F, // Violeta (Rojo+Azul)
+        0x07FF  // Turquesa brillante
     };
+
     int cantidad_colores = sizeof(colores) / sizeof(colores[0]);
 
     if (cantidad_figuras > cantidad_colores) cantidad_figuras = cantidad_colores;
@@ -212,12 +213,10 @@ void dibujar_figuras(int tipo_figura) {
         int posicion_x = centro_pantalla_x + (int)(radio_posicion * cos(angulo)) - (TAMANO_FIGURA / 2);
         int posicion_y = centro_pantalla_y + (int)(radio_posicion * sin(angulo)) - (TAMANO_FIGURA / 2);
 
-        // Elegir un indice aleatorio de los disponibles
         int pos_aleatoria = rand() % indices_restantes;
         int indice_color = indices_disponibles[pos_aleatoria];
         int color = colores[indice_color];
         
-        // Eliminar el indice usado de la lista
         for (int k = pos_aleatoria; k < indices_restantes - 1; k++) {
             indices_disponibles[k] = indices_disponibles[k + 1];
         }
