@@ -176,29 +176,30 @@ void dibujar_figuras(int tipo_figura) {
 
     int cantidad_figuras = (rand() % 4) + 2;
 
-    // Colores RGB565 brillantes: R(5 bits) G(6 bits) B(5 bits)
+    // Colores RGB565 brillantes y de alto contraste
     unsigned short colores[] = {
-        0xFFFF, 
-        0xFFE0, 
-        0x07E0,
-        0x001F,
-        0xF800,
-        0xF81F,
-        0x07FF,
-        0xFD60,
-        0x5FFF,
-        0xBDF7
+        0xFFFF, // Blanco
+        0xFFE0, // Amarillo
+        0xF800, // Rojo
+        0x001F, // Azul
+        0xF81F, // Magenta
+        0x07FF, // Cyan
+        0xFBE0, // Naranja claro
+        0x07F0, // Verde claro
+        0xFC10, // Naranja rojizo
+        0x5D1F  // Violeta
     };
     int cantidad_colores = sizeof(colores) / sizeof(colores[0]);
 
     if (cantidad_figuras > cantidad_colores) cantidad_figuras = cantidad_colores;
 
-    unsigned short colores_temp[10];
+    // Crear array temporal con los indices disponibles
+    int indices_disponibles[10];
     for (int i = 0; i < cantidad_colores; i++) { 
-        colores_temp[i] = colores[i];
+        indices_disponibles[i] = i;
     }
 
-    int colores_restantes = cantidad_colores;
+    int indices_restantes = cantidad_colores;
     printf("\nDibujando %d figuras...", cantidad_figuras);
 
     int centro_pantalla_x = informacion_variable->xres / 2;
@@ -211,13 +212,16 @@ void dibujar_figuras(int tipo_figura) {
         int posicion_x = centro_pantalla_x + (int)(radio_posicion * cos(angulo)) - (TAMANO_FIGURA / 2);
         int posicion_y = centro_pantalla_y + (int)(radio_posicion * sin(angulo)) - (TAMANO_FIGURA / 2);
 
+        // Elegir un indice aleatorio de los disponibles
+        int pos_aleatoria = rand() % indices_restantes;
+        int indice_color = indices_disponibles[pos_aleatoria];
+        int color = colores[indice_color];
         
-        int color_indice = rand() % colores_restantes;
-        int color = colores_temp[color_indice];
-        for (int k = color_indice; k < colores_restantes - 1; k++) {
-            colores_temp[k] = colores_temp[k + 1];
+        // Eliminar el indice usado de la lista
+        for (int k = pos_aleatoria; k < indices_restantes - 1; k++) {
+            indices_disponibles[k] = indices_disponibles[k + 1];
         }
-        colores_restantes--;
+        indices_restantes--;
 
         switch (tipo_figura) {
         case 1:
