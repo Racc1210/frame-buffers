@@ -23,7 +23,7 @@ int main() {
             dibujar_figuras(opcion);
         } else if (opcion == 5) {
             limpiar_pantalla();
-            printf("¡Hasta luego!\n");
+            printf("Programa terminado\n");
         } else {
             limpiar_pantalla();
             printf("Opcion invalida. Presiona cualquier tecla...\n");

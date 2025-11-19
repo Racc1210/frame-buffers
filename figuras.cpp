@@ -176,8 +176,23 @@ void dibujar_figuras(int tipo_figura) {
 
     int cantidad_figuras = (rand() % 4) + 2;
 
-    int colores[] = {0xF800, 0x07E0, 0x001F, 0xFFE0, 0xF81F, 0x07FF, 0xFFFF};
-    int cantidad_colores = 7;
+    int colores[] = {0xFFFF, 0xF800, 0x07E0, 0x001F,
+        0xFFE0, 0xF81F, 0x07FF, 0xFD20, 0xAFE5, 0xF7DE  };
+
+    int cantidad_colores = sizeof(colores) / sizeof(colores[0]);
+
+    int colores_usados[10];
+
+    for (int i = 0; i < cantidad_colores; i++) {
+        colores_usados[i] = colores[i];
+    }
+
+    for (int i = cantidad_colores - 1; i > 0; i--) {
+        int j = rand() % (i + 1);
+        unsigned short temp = colores_usados[i];
+        colores_usados[i] = colores_usados[j];
+        colores_usados[j] = temp;
+    }
 
     printf("\nDibujando %d figuras...", cantidad_figuras);
 
@@ -192,7 +207,7 @@ void dibujar_figuras(int tipo_figura) {
         int posicion_x = centro_pantalla_x + (int)(radio_posicion * cos(angulo)) - (TAMANO_FIGURA / 2);
         int posicion_y = centro_pantalla_y + (int)(radio_posicion * sin(angulo)) - (TAMANO_FIGURA / 2);
 
-        int color = colores[rand() % cantidad_colores];
+        int color = colores_usados[indice];
 
         switch (tipo_figura) {
         case 1:
