@@ -1,7 +1,8 @@
 #include "framebuffer.hpp"
 #include "figuras.hpp"
 #include "utilidades.hpp"
-#include <time.h>
+#include <cstdlib>
+#include <ctime>
 #include <stdio.h>
 
 int main() {
