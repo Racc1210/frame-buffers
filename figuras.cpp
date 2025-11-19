@@ -176,29 +176,32 @@ void dibujar_figuras(int tipo_figura) {
 
     int cantidad_figuras = (rand() % 4) + 2;
 
-    unsigned short colores[] = {0xFFFF, 0xF800, 0x07E0, 0x001F,
-        0xFFE0, 0xF81F, 0x07FF, 0xFD20, 0xAFE5, 0xF7DE  };
-
+    unsigned short colores[] = {
+        0xFFFF, 
+        0xFFE0, 
+        0x07E0, 
+        0x001F, 
+        0xF800, 
+        0xF81F, 
+        0x07FF, 
+        0xFD20, 
+        0xAFE5, 
+        0x1FF8 
+    };
     int cantidad_colores = sizeof(colores) / sizeof(colores[0]);
 
-    unsigned short colores_usados[10];
+    if (cantidad_figuras > cantidad_colores) cantidad_figuras = cantidad_colores;
 
-    for (int i = 0; i < cantidad_colores; i++) {
-        colores_usados[i] = colores[i];
+    unsigned short colores_temp[10];
+    for (int i = 0; i < cantidad_colores; i++) { 
+        colores_temp[i] = colores[i];
     }
 
-    for (int i = cantidad_colores - 1; i > 0; i--) {
-        int j = rand() % (i + 1);
-        unsigned short temp = colores_usados[i];
-        colores_usados[i] = colores_usados[j];
-        colores_usados[j] = temp;
-    }
-
+    int colores_restantes = cantidad_colores;
     printf("\nDibujando %d figuras...", cantidad_figuras);
 
     int centro_pantalla_x = informacion_variable->xres / 2;
     int centro_pantalla_y = informacion_variable->yres / 2;
-
     int radio_posicion = (informacion_variable->xres < informacion_variable->yres ? informacion_variable->xres : informacion_variable->yres) / 3;
 
     for (int indice = 0; indice < cantidad_figuras; indice++) {
@@ -207,7 +210,13 @@ void dibujar_figuras(int tipo_figura) {
         int posicion_x = centro_pantalla_x + (int)(radio_posicion * cos(angulo)) - (TAMANO_FIGURA / 2);
         int posicion_y = centro_pantalla_y + (int)(radio_posicion * sin(angulo)) - (TAMANO_FIGURA / 2);
 
-        int color = colores_usados[indice];
+
+        int color_indice = rand() % colores_restantes;
+        int color = colores_temp[color_indice];
+        for (int k = color_indice; k < colores_restantes - 1; k++) {
+            colores_temp[k] = colores_temp[k + 1];
+        }
+        colores_restantes--;
 
         switch (tipo_figura) {
         case 1:
