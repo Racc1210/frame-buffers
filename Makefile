@@ -1,8 +1,9 @@
 CXX = g++
+LIBS = -lm
 
-SOURCES = utilidades.cpp framebuffer.cpp iguras.cpp main.cpp
+SOURCES = main.cpp framebuffer.cpp figuras.cpp utilidades.cpp
 OBJECTS = $(SOURCES:.cpp=.o)
-EXECUTABLE = to04_polygons
+EXECUTABLE = to04
 
 all: $(EXECUTABLE)
 
@@ -10,12 +11,16 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CXX) $(OBJECTS) -o $(EXECUTABLE) $(LIBS)
 
 %.o: %.cpp
-	$(CXX) $< -o $@
+	$(CXX) -c $< -o $@
 
 clean:
 	rm -f $(OBJECTS) $(EXECUTABLE)
 
 run: $(EXECUTABLE)
-	sudo ./$(EXECUTABLE)
+	./$(EXECUTABLE)
+
+play:
+    $(MAKE) clean
+    $(MAKE) run
 
 .PHONY: all clean run help
