@@ -176,12 +176,12 @@ void dibujar_figuras(int tipo_figura) {
 
     int cantidad_figuras = (rand() % 4) + 2;
 
-    int colores[] = {0xFFFF, 0xF800, 0x07E0, 0x001F,
+    unsigned short colores[] = {0xFFFF, 0xF800, 0x07E0, 0x001F,
         0xFFE0, 0xF81F, 0x07FF, 0xFD20, 0xAFE5, 0xF7DE  };
 
     int cantidad_colores = sizeof(colores) / sizeof(colores[0]);
 
-    int colores_usados[10];
+    unsigned short colores_usados[10];
 
     for (int i = 0; i < cantidad_colores; i++) {
         colores_usados[i] = colores[i];
