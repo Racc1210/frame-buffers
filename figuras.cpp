@@ -16,7 +16,7 @@ void dibujar_cuadrado(int posicion_x, int posicion_y, int color) {
             int pixel_x = posicion_x + columna;
             int pixel_y = posicion_y + fila;
 
-            if (pixel_x >= informacion_variable->xres || pixel_y >= informacion_variable->yres)
+            if ((unsigned int)pixel_x >= informacion_variable->xres || (unsigned int)pixel_y >= informacion_variable->yres)
                 continue;
 
             long int ubicacion = (pixel_y + informacion_variable->yoffset) * informacion_fija->line_length +
@@ -63,7 +63,7 @@ void dibujar_pentagono(int posicion_x, int posicion_y, int color) {
             }
 
             if (dentro) {
-                if (pixel_x >= informacion_variable->xres || pixel_y >= informacion_variable->yres)
+                if ((unsigned int)pixel_x >= informacion_variable->xres || (unsigned int)pixel_y >= informacion_variable->yres)
                     continue;
 
                 long int ubicacion = (pixel_y + informacion_variable->yoffset) * informacion_fija->line_length +
@@ -110,7 +110,7 @@ void dibujar_heptagono(int posicion_x, int posicion_y, int color) {
                 }
             }
             if (dentro) {
-                if (pixel_x >= informacion_variable->xres || pixel_y >= informacion_variable->yres)
+                if ((unsigned int)pixel_x >= informacion_variable->xres || (unsigned int)pixel_y >= informacion_variable->yres)
                     continue;
 
                 long int ubicacion = (pixel_y + informacion_variable->yoffset) * informacion_fija->line_length +
@@ -158,7 +158,7 @@ void dibujar_decagono(int posicion_x, int posicion_y, int color) {
             }
 
             if (dentro) {
-                if (pixel_x >= informacion_variable->xres || pixel_y >= informacion_variable->yres)
+                if ((unsigned int)pixel_x >= informacion_variable->xres || (unsigned int)pixel_y >= informacion_variable->yres)
                     continue;
 
                 long int ubicacion = (pixel_y + informacion_variable->yoffset) * informacion_fija->line_length +
