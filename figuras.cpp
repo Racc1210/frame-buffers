@@ -179,7 +179,7 @@ void dibujar_figuras(int tipo_figura) {
     int colores[] = {0xF800, 0x07E0, 0x001F, 0xFFE0, 0xF81F, 0x07FF, 0xFFFF};
     int cantidad_colores = 7;
 
-    printf("\nDibujando %d figuras...\n", cantidad_figuras);
+    printf("\nDibujando %d figuras...", cantidad_figuras);
 
     int centro_pantalla_x = informacion_variable->xres / 2;
     int centro_pantalla_y = informacion_variable->yres / 2;
@@ -209,6 +209,6 @@ void dibujar_figuras(int tipo_figura) {
             break;
         }
     }
-    printf("¡Listo! Presiona cualquier tecla para continuar...\n");
+    printf("¡Listo!\nToque cualquier tecla para continuar...\n");
     obtener_tecla();
 }
